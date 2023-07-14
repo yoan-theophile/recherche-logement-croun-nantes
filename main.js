@@ -14,7 +14,7 @@ function findHouse(
   }
 
   const search = () => {
-    console.group(`Test No: ${testNumber}`)
+    console.group(`Test No: ${testNumber}`);
     // console.log(`Test No: ${testNumber}`);
     testNumber++;
 
@@ -56,6 +56,7 @@ function findHouse(
         );
         var listItemsNumber = listItems.length;
         console.log("Found: " + listItemsNumber + " element(s)");
+        save({ houseNumber: listItemsNumber, testNumber: testNumber - 1 });
 
         // show notification if there is elements
         if (listItemsNumber > 0) {
@@ -75,11 +76,32 @@ function findHouse(
       }, 30 * 1000);
     }, 10 * 1000);
 
-    console.groupEnd()
+    console.groupEnd();
+  };
+
+  const save = ({
+    keyName = "searchResult",
+    date = new Date(),
+    houseNumber = 0,
+    testNumber = 0,
+  }) => {
+    const existingData = localStorage.getItem(keyName) || '[]';
+    const parsedData = JSON.parse(existingData);
+    const newData = [
+      ...parsedData,
+      {
+        date: date.toUTCString(),
+        status: `${houseNumber > 0 ? "✅" : "🔴"}`,
+        houseNumber,
+        testNumber,
+      },
+    ];
+    const newDataString = JSON.stringify(newData);
+    localStorage.setItem(keyName, newDataString);
   };
 
   // launch the first time
-  search()
+  search();
 
   // find a house every SEARCH_INTERVAL milliseconds
   setInterval(search, SEARCH_INTERVAL);
